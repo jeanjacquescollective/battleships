@@ -8,8 +8,6 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server);
 
-app.use(cors());
-
 // OR, specify allowed origins
 app.use(cors({
   origin: 'http://localhost:5174/', // Change this to match your frontend
@@ -17,15 +15,16 @@ app.use(cors({
   allowedHeaders: ['Content-Type'],
 }));
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'index.html'));
-});
 
 io.on('connection', (socket) => {
   console.log('a user connected');
+  socket.on('sendMessage', (msg) => {
+    console.log(msg)
+    io.emit('receiveMessage', msg);
+  });
 });
+
+
 
 server.listen(3000, () => {
   console.log('server running at http://localhost:3000');
